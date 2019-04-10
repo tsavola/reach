@@ -39,7 +39,7 @@ Example:
 		return
 	}
 
-The coverage may be checked using the the parent package.
+The coverage may be checked using the parent package.
 */
 package cover
 
