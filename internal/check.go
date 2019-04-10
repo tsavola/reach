@@ -57,8 +57,12 @@ func Check(verbose bool) (ok bool, err error) {
 			}
 
 			if ident != "" {
-				v := &visitor{fset, name, ident, sites} // TODO: look into imports
+				v := &visitor{fset, name, ident, sites, nil}
 				ast.Walk(v, file)
+				if v.err != nil {
+					err = v.err
+					return
+				}
 				sites = v.sites
 			}
 		}
@@ -131,14 +135,22 @@ type visitor struct {
 	file  string
 	ident string
 	sites []site
+	err   error
 }
 
 func (v *visitor) Visit(node ast.Node) ast.Visitor {
 	if id, ok := node.(*ast.Ident); ok && id.Name == v.ident && id.Obj == nil {
-		v.sites = append(v.sites, site{
+		site := site{
 			v.file,
 			v.fset.Position(id.NamePos).Line,
-		})
+		}
+
+		if len(v.sites) > 0 && v.sites[len(v.sites)-1] == site {
+			v.err = fmt.Errorf("%s: multiple coverage assertions on one line", site)
+			return nil
+		}
+
+		v.sites = append(v.sites, site)
 	}
 
 	return v
