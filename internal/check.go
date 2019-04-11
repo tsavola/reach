@@ -109,8 +109,8 @@ func Check(verbose bool) (ok bool, err error) {
 		case !reached:
 			line += " unreached"
 
-		case len(cs) == 0:
-			line += " covered"
+		case all(cs):
+			line += " ok"
 
 		default:
 			delim := " coverage:"
