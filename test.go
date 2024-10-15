@@ -5,9 +5,15 @@
 package reach
 
 import (
+	"io"
 	"os"
 	"testing"
 )
+
+// PrintLocationsTo writer is used to print diagnostics about the source code
+// locations where cover package's functions are called.  Set it to e.g.
+// [os.Stderr] before calling Check or TestMain.
+var PrintLocationsTo io.Writer = io.Discard
 
 // TestMain can be used to implement a TestMain function which calls Check.
 //

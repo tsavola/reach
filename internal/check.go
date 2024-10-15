@@ -10,6 +10,7 @@ import (
 	"go/build"
 	"go/parser"
 	"go/token"
+	"io"
 	"os"
 	"path"
 	"sort"
@@ -18,7 +19,7 @@ import (
 
 const CoverImportPath = "github.com/tsavola/reach/cover"
 
-func Check(verbose bool) (ok bool, err error) {
+func Check(verbose bool, locations io.Writer) (ok bool, err error) {
 	srcdir, err := os.Getwd()
 	if err != nil {
 		return
@@ -71,6 +72,13 @@ func Check(verbose bool) (ok bool, err error) {
 	sort.Slice(sites, func(i, j int) bool {
 		return sites[i].file < sites[j].file || (sites[i].file == sites[j].file && sites[i].line < sites[j].line)
 	})
+
+	for _, site := range sites {
+		fmt.Fprintf(locations, "%s: cover location\n", site)
+	}
+	if len(sites) == 0 {
+		fmt.Fprintf(locations, "reach: no cover locations found\n")
+	}
 
 	coverLock.Lock()
 	defer coverLock.Unlock()

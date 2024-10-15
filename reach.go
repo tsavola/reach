@@ -15,7 +15,7 @@ import (
 )
 
 func Check(verbose bool) (ok bool) {
-	ok, err := internal.Check(verbose)
+	ok, err := internal.Check(verbose, PrintLocationsTo)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		ok = false
